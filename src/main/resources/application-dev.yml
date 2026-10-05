@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/payment_api_dev
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:7654321}
+  jpa:
+    show-sql: true
+
+logging:
+  level:
+    com.gabrielf.paymentapi: DEBUG
