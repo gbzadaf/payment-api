@@ -1,5 +1,6 @@
 package com.gabrielf.payment_api.model;
 
+import com.gabrielf.payment_api.exception.InvalidPaymentStateException;
 import com.gabrielf.payment_api.model.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -64,6 +65,28 @@ public class Payment {
         this.description = description;
         this.idempotencyKey = idempotencyKey;
         this.status = PaymentStatus.PENDING;
+    }
+
+    //maquina de estados, ao inves de setters, a entidade ganha metodos com regra. regras de dominio, service orquestra.
+
+    public void approve() {
+        transitionTo(PaymentStatus.APPROVED, PaymentStatus.PENDING);
+    }
+
+    public void fail() {
+        transitionTo(PaymentStatus.FAILED, PaymentStatus.PENDING);
+    }
+
+    public void refund() {
+        transitionTo(PaymentStatus.REFUNDED, PaymentStatus.PENDING);
+    }
+
+
+    private void transitionTo (PaymentStatus target, PaymentStatus requiredCurrent) {
+        if (this.status != requiredCurrent) {
+            throw new InvalidPaymentStateException(this.status, target);
+        }
+        this.status = target;
     }
 
 }
