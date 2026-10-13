@@ -3,8 +3,12 @@ package com.gabrielf.payment_api.service;
 import com.gabrielf.payment_api.dto.PaymentRequest;
 import com.gabrielf.payment_api.dto.PaymentResponse;
 import com.gabrielf.payment_api.exception.IdempotencyKeyReuseException;
+import com.gabrielf.payment_api.exception.InvalidPaymentStateException;
 import com.gabrielf.payment_api.exception.PaymentNotFoundException;
+import com.gabrielf.payment_api.gateway.GatewayResult;
+import com.gabrielf.payment_api.gateway.PaymentGateway;
 import com.gabrielf.payment_api.model.Payment;
+import com.gabrielf.payment_api.model.enums.PaymentStatus;
 import com.gabrielf.payment_api.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -18,6 +22,7 @@ import java.util.UUID;
 public class PaymentService {
 
     private final PaymentRepository paymentRepository;
+    private final PaymentGateway paymentGateway;
 
     /*sem transactional, se o create fosse transactional, o findByIdempotencyKey dentro do catch quebraria. Sem a anotação,
     cada chamada ao repository roda na própria transação: o saveAndFlush falha e fecha a dele, e a busca seguinte abre
@@ -36,6 +41,24 @@ public class PaymentService {
                 .map(PaymentResponse::from)
                 .orElseThrow(() -> new PaymentNotFoundException(id));
 
+    }
+
+    public PaymentResponse process(UUID id) {
+        Payment payment = paymentRepository.findById(id)
+                .orElseThrow(() -> new PaymentNotFoundException(id));
+
+        if (payment.getStatus() != PaymentStatus.PENDING) {
+            throw new InvalidPaymentStateException(payment.getStatus(), PaymentStatus.APPROVED);
+        }
+
+        GatewayResult result = paymentGateway.charge(payment);
+        if (result == GatewayResult.APPROVED) {
+            payment.approve();
+        } else {
+            payment.fail();
+        }
+
+        return PaymentResponse.from(paymentRepository.saveAndFlush(payment));
     }
 
 

@@ -37,4 +37,10 @@ public class PaymentController {
         return ResponseEntity.ok(paymentService.findById(id));
 
     }
+
+    @PostMapping("/{id}/process")
+    public ResponseEntity<PaymentResponse> process(@PathVariable UUID id) {
+        return ResponseEntity.ok(paymentService.process(id));
+
+    }
 }
