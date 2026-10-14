@@ -42,6 +42,9 @@ public class PaymentServiceTest {
     @Mock
     private PaymentGateway paymentGateway;
 
+    @Mock
+    WebhookService webhookService;
+
     private PaymentRequest request(String amount) {
         return new PaymentRequest(new BigDecimal(amount), "BRL", "Pedido #1");
     }
@@ -159,6 +162,7 @@ public class PaymentServiceTest {
 
         assertThat(response.status()).isEqualTo(PaymentStatus.APPROVED);
         verify(paymentGateway).charge(pending);
+        verify(webhookService).send(pending);
 
     }
 
@@ -174,6 +178,7 @@ public class PaymentServiceTest {
 
         verify(paymentGateway, never()).charge(any());
         verify(paymentRepository, never()).saveAndFlush(any());
+        verify(webhookService, never()).send(any());
 
     }
 
@@ -191,6 +196,7 @@ public class PaymentServiceTest {
         assertThat(response.status()).isEqualTo(PaymentStatus.FAILED);
         verify(paymentGateway).charge(pending);
         verify(paymentRepository).saveAndFlush(pending);
+        verify(webhookService).send(pending);
 
     }
 
@@ -205,6 +211,7 @@ public class PaymentServiceTest {
 
         verify(paymentGateway, never()).charge(any());
         verify(paymentRepository, never()).saveAndFlush(any());
+        verify(webhookService, never()).send(any());
 
     }
 

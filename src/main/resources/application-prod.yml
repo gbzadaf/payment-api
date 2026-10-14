@@ -9,3 +9,7 @@ spring:
 logging:
   level:
     com.gabrielf.paymentapi: INFO
+
+webhook:
+  url: ${WEBHOOK_URL}
+  secret: ${WEBHOOK_SECRET}
