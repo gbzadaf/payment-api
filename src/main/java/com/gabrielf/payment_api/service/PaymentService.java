@@ -23,6 +23,7 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final PaymentGateway paymentGateway;
+    private final WebhookService webhookService;
 
     /*sem transactional, se o create fosse transactional, o findByIdempotencyKey dentro do catch quebraria. Sem a anotação,
     cada chamada ao repository roda na própria transação: o saveAndFlush falha e fecha a dele, e a busca seguinte abre
@@ -58,7 +59,9 @@ public class PaymentService {
             payment.fail();
         }
 
-        return PaymentResponse.from(paymentRepository.saveAndFlush(payment));
+        Payment saved = paymentRepository.saveAndFlush(payment);
+        webhookService.send(saved);
+        return PaymentResponse.from(saved);
     }
 
 

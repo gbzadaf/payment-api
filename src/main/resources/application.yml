@@ -9,3 +9,8 @@ spring:
       ddl-auto: validate
   flyway:
     enabled: true
+webhook:
+  url: ${WEBHOOK_URL:http://localhost:9000/webhook}
+  secret: ${WEBHOOK_SECRET:dev-secret-change-me}
+  max-attempts: 3
+  retry-delay-ms: 2000
