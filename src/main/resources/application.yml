@@ -14,3 +14,6 @@ webhook:
   secret: ${WEBHOOK_SECRET:dev-secret-change-me}
   max-attempts: 3
   retry-delay-ms: 2000
+jwt:
+  secret: ${JWT_SECRET:dev-only-secret-change-me-0123456789abcdef}
+  expiration: 3600000
