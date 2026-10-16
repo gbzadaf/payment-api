@@ -13,3 +13,6 @@ logging:
 webhook:
   url: ${WEBHOOK_URL}
   secret: ${WEBHOOK_SECRET}
+
+jwt:
+  secret: ${JWT_SECRET}
