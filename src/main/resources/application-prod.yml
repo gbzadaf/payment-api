@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    show-sql: false
+
+logging:
+  level:
+    com.gabrielf.payment_api: INFO
+
+webhook:
+  url: ${WEBHOOK_URL}
+  secret: ${WEBHOOK_SECRET}
+
+jwt:
+  secret: ${JWT_SECRET}
