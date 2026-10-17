@@ -8,7 +8,7 @@ spring:
 
 logging:
   level:
-    com.gabrielf.paymentapi: INFO
+    com.gabrielf.payment_api: INFO
 
 webhook:
   url: ${WEBHOOK_URL}
